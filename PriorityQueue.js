@@ -24,8 +24,10 @@ class PriorityQueue {
     // dequeue method to remove 
     // element from the queue 
     dequeue() {
-        if (this.isEmpty())
+        if (this.isEmpty()){
+            alert("Underflow");
             return "Underflow";
+        }
         return this.items.shift();
     }
     // returns the highest priority element

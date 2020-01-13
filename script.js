@@ -290,6 +290,7 @@ function Dijkstra() {
     let start = grid[start_y][start_x];
     let target = grid[target_y][target_x];
 
+    resetNodes();
     //odległość od źródła, wszystkie pozostale mają infinity
     start.priority = 0;
     let Q = new PriorityQueue();
@@ -312,10 +313,9 @@ function Dijkstra() {
 
         if (minNode.Equals(target)) {
             DrawPath(minNode);
-            return null;
+            return;
         }
         let neighbours = Neighbours(minNode);
-
         neighbours.forEach(n => {
                 if (minNode.priority + 1 < n.priority && n.type != "wall") {
                     n.priority = minNode.priority + 1;
@@ -326,4 +326,12 @@ function Dijkstra() {
         });
     }
     return null;
+}
+function resetNodes(){
+    for (i = 0; i < height; i++) {
+        for (j = 0; j < width; j++) {
+            grid[i][j].parent = null;
+            grid[i][j].priority = Infinity;
+        }
+    }
 }
