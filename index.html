@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pathfinding</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="node.js"></script>
+    <script src="script.js"></script>
+    <script src="PriorityQueue.js"></script>
+</head>
+
+<body onload="init()">
+    <div style="text-align: center;">
+        <div id="menu">
+            <label for="algorithm">Pathfinding algorithm:</label>
+            <select id="algorithm">
+                <option value="A*">A*</option>
+                <option value="Dijkstra">Dijkstra</option>
+            </select>
+            <button onclick="Visualize()">Visualize</button>
+            <button onclick="Clear('full')">Clear</button>
+        </div>
+
+        <div id="legend">
+            <div class="legend_element">
+                <div class="square" style="background: #27ae60;"></div>
+                <span class="desc">Start</span>
+            </div>
+
+            <div class="legend_element">
+                <div class="square" style="background: #e74c3c;"></div>
+                <span class="desc">Target</span>
+            </div>
+
+            <div class="legend_element">
+                <div class="square" style="background: #1e272e;"></div>
+                <span class="desc">Wall</span>
+            </div>
+
+            <div class="legend_element">
+                <div class="square" style="background: #ecf0f1;"></div>
+                <span class="desc">Empty space</span>
+            </div>
+
+            <div class="legend_element">
+                <div class="square" style="background: #1abc9c;"></div>
+                <span class="desc">Open</span>
+            </div>
+
+            <div class="legend_element">
+                <div class="square" style="background: #8e44ad;"></div>
+                <span class="desc">Closed</span>
+            </div>
+
+            <div class="legend_element">
+                <div class="square" style="background: #f1c40f;"></div>
+                <span class="desc">Path</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="grid">
+    </div>
+
+    <footer>
+        ja i filip
+    </footer>
+</body>
+</html>

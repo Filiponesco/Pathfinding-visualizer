@@ -1,0 +1,139 @@
+:root {
+  --size: 30px;
+  --border_size: 0.5px;
+}
+
+#menu{
+    display: block;
+    background: wheat;
+    padding: 5px;
+}
+
+#legend{
+    background: blanchedalmond;
+    padding: 5px;
+}
+
+.legend_element{
+    padding: 0px 5px 0px 5px;
+    display: inline-block;
+}
+
+.square{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+    vertical-align: middle;
+}
+
+.desc{
+    font-size: 16px;
+    vertical-align: middle;
+}
+
+#grid{
+    width: 100%;
+    height: auto;
+    border: 2px black solid;
+}
+
+footer{
+    position: fixed;
+    font-size: 18px;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.empty_cell{
+    width: var(--size);
+    height: var(--size);
+    border: var(--border_size) black solid;
+    background: #ecf0f1;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.wall{
+    width: var(--size);
+    height: var(--size);
+    background: #1e272e;
+    border: var(--border_size) black solid;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.start{
+    width: var(--size);
+    height: var(--size);
+    border: var(--border_size) black solid;
+    background: #27ae60;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.target{
+    width: var(--size);
+    height: var(--size);
+    border: var(--border_size) black solid;
+    background: #e74c3c;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.closed{
+    width: var(--size);
+    height: var(--size);
+    border: var(--border_size) black solid;
+    background: #8e44ad;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.open{
+    width: var(--size);
+    height: var(--size);
+    border: var(--border_size) black solid;
+    background: #1abc9c;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
+
+.path{
+    width: var(--size);
+    height: var(--size);
+    border: var(--border_size) black solid;
+    background: #f1c40f;
+    user-drag: none; 
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-drag: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+}
