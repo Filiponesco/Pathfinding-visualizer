@@ -11,6 +11,9 @@ var previousStyleTarget1 = "empty_cell";
 var previousStyleTarget2 = "empty_cell";
 var width;
 var height;
+var activeItem = null;
+var active = false;
+var endTouchElement = null;
 
 var grid = [];
 
@@ -21,8 +24,19 @@ function init() {
     document.body.onmouseup = function () {
         mouseDown = 0;
     }
+    document.body.ontouchstart = function () {
+        mouseDown = 1;
+    }
+    document.body.ontouchmove = function () {
+        mouseDown = 0;
+    }
 
-    CreateGrid();
+    if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        CreateGridForPhones();
+    }
+    else {
+        CreateGrid();
+    }
 }
 
 function CreateGrid() {
@@ -77,6 +91,7 @@ function CreateGrid() {
 }
 
 function BuildWall(type, id) {
+    //wykonuje sie zawsze gdy myszka jest na grid
     var element = document.getElementById(id);
     var temp = element.className;
 
@@ -125,7 +140,6 @@ function BuildWall(type, id) {
 
 function SetStartTarget(id, type) {
     var str = id.split("-");
-
     if (type == "start") {
         start_x = parseInt(str[0]);
         start_y = parseInt(str[1]);
@@ -303,7 +317,7 @@ function Dijkstra() {
         }
     }
     while (!Q.isEmpty()) {
-        if(Q.front() == "No path!") return;
+        if (Q.front() == "No path!") return;
         let minNode = Q.front();
 
         open.push(minNode);
@@ -317,21 +331,111 @@ function Dijkstra() {
         }
         let neighbours = Neighbours(minNode);
         neighbours.forEach(n => {
-                if (minNode.priority + 1 < n.priority && n.type != "wall") {
-                    n.priority = minNode.priority + 1;
-                    //have to update priorityqueue
-                    Q.refresh(n);
-                    n.parent = minNode;
+            if (minNode.priority + 1 < n.priority && n.type != "wall") {
+                n.priority = minNode.priority + 1;
+                //have to update priorityqueue
+                Q.refresh(n);
+                n.parent = minNode;
             }
         });
     }
     return null;
 }
-function resetNodes(){
+function resetNodes() {
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
             grid[i][j].parent = null;
             grid[i][j].priority = Infinity;
+        }
+    }
+}
+function CreateGridForPhones() {
+    var size = 20;
+    width = window.screen.availWidth;
+    height = window.screen.availHeight;
+
+    width = Math.floor(width / size);
+    height = height - 350;
+    height = Math.floor(height / size);
+
+    var element = document.getElementById("grid");
+
+    for (i = 0; i < height; i++) {
+        var tr = document.createElement("tr");
+        var temp = [];
+        for (j = 0; j < width; j++) {
+            var td = document.createElement("td");
+            td.className = "empty_cell";
+            td.id = j + "-" + i;
+            td.addEventListener("touchstart", dragStart, false);
+            td.addEventListener("touchmove", drag, false);
+            td.addEventListener("touchend", dragEnd, false);
+
+            tr.appendChild(td);
+
+            temp.push(new Node(j, i));
+        }
+        element.appendChild(tr);
+        grid.push(temp);
+    }
+
+    start_x = Math.floor(width / 4);
+    start_y = Math.floor(height / 2);
+    grid[start_y][start_x].type = "start";
+
+    target_x = Math.floor(3 * width / 4);
+    target_y = Math.floor(height / 2);
+    grid[target_y][target_x].type = "target";
+
+    var start = document.getElementById(start_x + "-" + start_y);
+    start.className = "start";
+
+    var target = document.getElementById(target_x + "-" + target_y);
+    target.className = "target";
+}
+function dragStart(e) {
+    activeItem = e.target;
+
+    if ((activeItem.className != "wall" && activeItem.className != "start" && activeItem.className != "target")) {
+        activeItem.className = "wall";
+        IdToNode(activeItem.id).type = "wall";
+    }
+    else if (activeItem.className == "wall") {
+        activeItem.className = "empty_cell";
+        IdToNode(activeItem.id).type = "empty_cell";
+    }
+    if (activeItem.className == "start" || activeItem.className == "target") {
+        active = true; //active drag element only when it is start or target
+    }
+}
+function dragEnd(e) {
+    if (active && activeItem !== null && endTouchElement !== null) {
+        console.log(endTouchElement.id);
+
+        //ustaw start
+        endTouchElement.className = activeItem.className;
+        IdToNode(endTouchElement.id).type = activeItem.className;
+
+        //zapisz do grid
+        SetStartTarget(endTouchElement.id, activeItem.className);
+
+        //ustaw stary start
+        activeItem.className = "empty_cell";
+        IdToNode(activeItem.id).type = "empty_cell";
+    }
+    active = false;
+    activeItem = null;
+}
+function drag(e) {
+    if (active) { //when element is start or end
+        if (e.type == "touchmove") {
+            e.preventDefault();
+            var el = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
+            if (el !== null) {
+                if (el.nodeName == "TD" && el.className !== "target") {
+                    endTouchElement = el;
+                }
+            }
         }
     }
 }
