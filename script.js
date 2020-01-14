@@ -14,6 +14,8 @@ var height;
 var activeItem = null;
 var active = false;
 var endTouchElement = null;
+var speedDrawPath = 100;
+var speedDrawOpen = 10;
 
 var grid = [];
 
@@ -31,7 +33,7 @@ function init() {
         mouseDown = 0;
     }
 
-    if ( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         CreateGridForPhones();
     }
     else {
@@ -264,16 +266,28 @@ function Clear(mode) {
 }
 
 function DrawPath(n) {
+    var path = [];
     let temp = n;
     while (temp.parent != null) {
         let id = NodeToId(temp);
-        let el = document.getElementById(id);
-
-        if (el.className != "start" && el.className != "target")
-            el.className = "path";
-
+        path.push(temp.parent);
         temp = temp.parent;
     }
+    var i = path.length - 1;
+    function myLoop() {
+        setTimeout(function () {
+            let id = NodeToId(path[i]);
+            let el = document.getElementById(id);
+            if (el.className != "start" && el.className != "target") {
+                el.className = "path";
+            }
+            i--;
+            if (i >= 0) {
+                myLoop();
+            }
+        }, speedDrawPath)
+    }
+    myLoop();
 }
 
 function ColorNode(node, type) {
@@ -321,12 +335,13 @@ function Dijkstra() {
         let minNode = Q.front();
 
         open.push(minNode);
-        ColorNode(minNode, "open");
+        //ColorNode(minNode, "open");
 
         Q.dequeue();
 
         if (minNode.Equals(target)) {
-            DrawPath(minNode);
+            slowDraw(open, minNode);
+            //DrawPath(minNode);
             return;
         }
         let neighbours = Neighbours(minNode);
@@ -438,4 +453,24 @@ function drag(e) {
             }
         }
     }
+}
+function slowDraw(open, minNode) {
+    var i = 0;
+    function myLoop() {
+        setTimeout(function () {
+            let id = NodeToId(open[i]);
+            let el = document.getElementById(id);
+            if (el.className != "start" && el.className != "target") {
+                el.className = "open";
+            }
+            i++;
+            if (i < open.length) {
+                myLoop();
+            }
+            else {
+                DrawPath(minNode);
+            }
+        }, speedDrawOpen)
+    }
+    myLoop();
 }
