@@ -220,6 +220,7 @@ function AStar() {
 
         if (current.Equals(target)) {
             DrawPath(current);
+            //slowDrawOpenPathClose(open, current, closed);
             return;
         }
 
@@ -340,7 +341,7 @@ function Dijkstra() {
         Q.dequeue();
 
         if (minNode.Equals(target)) {
-            slowDraw(open, minNode);
+            slowDrawOpenPath(open, minNode);
             //DrawPath(minNode);
             return;
         }
@@ -454,15 +455,27 @@ function drag(e) {
         }
     }
 }
-function slowDraw(open, minNode) {
+function slowDrawOpenPath(open, minNode) {
     var i = 0;
     function myLoop() {
         setTimeout(function () {
-            let id = NodeToId(open[i]);
-            let el = document.getElementById(id);
-            if (el.className != "start" && el.className != "target") {
-                el.className = "open";
+            ColorNode(open[i], "open");
+            i++;
+            if (i < open.length) {
+                myLoop();
             }
+            else {
+                DrawPath(minNode);
+            }
+        }, speedDrawOpen)
+    }
+    myLoop();
+}
+function slowDrawOpenPathClose(open, minNode, close) {
+    var i = 0;
+    function myLoop() {
+        setTimeout(function () {
+            ColorNode(open[i], "open");
             i++;
             if (i < open.length) {
                 myLoop();
