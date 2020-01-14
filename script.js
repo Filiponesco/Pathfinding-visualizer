@@ -167,7 +167,7 @@ function NodeToId(n) {
 }
 
 function Distance(a, b) {
-    return Math.round(Math.sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y)));
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
 }
 
 function Neighbours(n) {
@@ -213,14 +213,12 @@ function AStar() {
     while (open.length > 0) {
         let current = LowestFCost(open);
         closed.push(current);
-        ColorNode(current, "closed");
 
         let index = open.indexOf(current);
         open.splice(index, 1);
 
         if (current.Equals(target)) {
-            DrawPath(current);
-            //slowDrawOpenPathClose(open, current, closed);
+            slowDrawOpenPath(closed, current);
             return;
         }
 
@@ -236,7 +234,6 @@ function AStar() {
 
                     if (open.indexOf(n) < 0) {
                         open.push(n);
-                        ColorNode(n, "open");
                     }
                 }
             }
