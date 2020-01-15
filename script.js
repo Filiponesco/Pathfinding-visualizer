@@ -201,38 +201,38 @@ function LowestFCost(nodes) {
 
 function AStar() {
     Clear("visualization");
-    let open = [];
-    let closed = [];
-    let start = grid[start_y][start_x];
-    let target = grid[target_y][target_x];
+    let open = []; // list with all not calculated nodes
+    let closed = []; // list with all already calculated
+    let start = grid[start_y][start_x]; // starting node
+    let target = grid[target_y][target_x]; // target node
 
-    start.gCost = 0;
-    start.hCost = Distance(start, target);
-    open.push(start);
+    start.gCost = 0; //set g cost of staring node
+    start.hCost = Distance(start, target); // set h cost of starting node
+    open.push(start); // add staring node to open set
 
-    while (open.length > 0) {
-        let current = LowestFCost(open);
-        closed.push(current);
+    while (open.length > 0) { // while there are still nodes that weren't calculated
+        let current = LowestFCost(open); // search for node with lowest f_cost from open set
+        closed.push(current); // add current node to closed set
 
-        let index = open.indexOf(current);
+        let index = open.indexOf(current); // remove current node from open set
         open.splice(index, 1);
 
-        if (current.Equals(target)) {
+        if (current.Equals(target)) { // if current node is target node, we found path
             slowDrawOpenPath(closed, current);
             return;
         }
 
-        let neighbours = Neighbours(current);
+        let neighbours = Neighbours(current); // look for niegbours of current node
 
         neighbours.forEach(n => {
-            if (n.type != "wall" && closed.indexOf(n) < 0) {
-                let temp = current.gCost + Distance(current, n);
-                if (temp < n.gCost || open.indexOf(n) < 0) {
-                    n.gCost = temp;
+            if (n.type != "wall" && closed.indexOf(n) < 0) { // if neighbour is not wall and is not already calculated
+                let temp = current.gCost + Distance(current, n); // calculate g_cost of neighbour
+                if (temp < n.gCost || open.indexOf(n) < 0) { // if neighbour has lower g_cost or its not in open set
+                    n.gCost = temp; // set g and f costs
                     n.hCost = Distance(n, target);
-                    n.parent = current;
+                    n.parent = current; // set parent as current node
 
-                    if (open.indexOf(n) < 0) {
+                    if (open.indexOf(n) < 0) { // if its not in opne set, add it there
                         open.push(n);
                     }
                 }
@@ -241,6 +241,7 @@ function AStar() {
     }
 
     alert("There is no path");
+    slowDrawOpenPath(closed, null);
     return null;
 }
 
@@ -311,8 +312,7 @@ function Visualize() {
 }
 function Dijkstra() {
     Clear("visualization");
-    let open = [];
-    let closed = [];
+    let open = []; // 
     let start = grid[start_y][start_x];
     let target = grid[target_y][target_x];
 
@@ -329,7 +329,10 @@ function Dijkstra() {
         }
     }
     while (!Q.isEmpty()) {
-        if (Q.front() == "No path!") return;
+        if (Q.front() == "No path!") {
+            slowDrawOpenPath(open, null);
+            return;
+        }
         let minNode = Q.front();
 
         open.push(minNode);
@@ -352,7 +355,6 @@ function Dijkstra() {
             }
         });
     }
-    return null;
 }
 function resetNodes() {
     for (i = 0; i < height; i++) {
