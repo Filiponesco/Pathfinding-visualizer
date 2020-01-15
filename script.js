@@ -312,14 +312,14 @@ function Visualize() {
 }
 function Dijkstra() {
     Clear("visualization");
-    let open = []; // 
+    let open = []; //item from Q with priority < Infinity
+    let close = [];
     let start = grid[start_y][start_x];
     let target = grid[target_y][target_x];
 
     resetNodes();
-    //odległość od źródła, wszystkie pozostale mają infinity
-    start.priority = 0;
-    let Q = new PriorityQueue();
+    start.priority = 0; //odległość od źródła, wszystkie pozostale mają infinity
+    let Q = new PriorityQueue(); //it is create for fast get vertex with min distance (priority close 0)
 
     open.push(start);
 
@@ -328,33 +328,45 @@ function Dijkstra() {
             Q.enqueue(grid[i][j]);
         }
     }
-    while (!Q.isEmpty()) {
-        if (Q.front() == "No path!") {
-            slowDrawOpenPath(open, null);
-            return;
-        }
-        let minNode = Q.front();
+    //it does not exist neigbour vertex of all previous vertex, 
+    //when you want count for all vertex change to: "!Q.isEmpty"
+    while (open.length > 0) { //when infinity: it does not exist neigbour vertex of all previous vertex
+        let minNode;
+        if (Q.front().priority < Infinity) {
+            minNode = Q.dequeue(); //i dont want that minNode has propably that his priority is infinity
+            open.push(minNode);
+            //ColorNode(minNode, "open");
 
-        open.push(minNode);
-        //ColorNode(minNode, "open");
-
-        Q.dequeue();
-
-        if (minNode.Equals(target)) {
-            slowDrawOpenPath(open, minNode);
-            //DrawPath(minNode);
-            return;
-        }
-        let neighbours = Neighbours(minNode);
-        neighbours.forEach(n => {
-            if (minNode.priority + 1 < n.priority && n.type != "wall") {
-                n.priority = minNode.priority + 1;
-                //have to update priorityqueue
-                Q.refresh(n);
-                n.parent = minNode;
+            //later we can remove this if and wait when alghoritm finish work for all vertex,
+            //because we will be able to drag end point
+            if (minNode.Equals(target)) { //the end working alghorith when vertex with minDistance(priority close 0) is target
+                slowDrawOpenPath(open, minNode);
+                //DrawPath(minNode);
+                alert("Znaleziono ścieżkę open dl: " + open.length + "close dl: " + close.length);
+                return;
             }
-        });
+            let neighbours = Neighbours(minNode);
+            neighbours.forEach(n => {
+                if (n.type != "wall" && close.indexOf(n) < 0) { //check if vertex was calculate
+                    if (minNode.priority + 1 < n.priority) {
+                        n.priority = minNode.priority + 1;
+                        Q.refresh(n); //insert node in correct place
+                        n.parent = minNode; //every vertex (without start) has previous vertex which path from start to him is shortest
+                        if (open.indexOf(n) < 0) { // if its not in open set, add it there
+                            open.push(n); //new vertex to calculate neigbours in next iterations
+                        }
+                    }
+                }
+            });
+        }
+        //remove open in order to end loop
+        //it will be run last time when (if Q.front().priority < Infinity not run) to delete last item in open
+        let index = open.indexOf(minNode);
+        open.splice(index, 1); //remove this vertex because
+        close.push(minNode); //this vertex is done
     }
+    alert("Brak ścieżki open dl: " + open.length + "close dl: " + close.length);
+    return null;
 }
 function resetNodes() {
     for (i = 0; i < height; i++) {

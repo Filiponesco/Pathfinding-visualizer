@@ -21,8 +21,7 @@ class PriorityQueue {
     }
     // dequeue method to remove element from the queue 
     dequeue() {
-        if (this.isEmpty()){
-            alert("Underflow");
+        if (this.isEmpty()) {
             return "Underflow";
         }
         return this.items.shift();
@@ -31,14 +30,7 @@ class PriorityQueue {
     front() {
         if (this.isEmpty())
             return "No elements in Queue";
-
-        for (var i = 0; i < this.items.length; i++) {
-            if(this.items[i].type != "wall" && this.items[i].priority < Infinity){
-                return this.items[i];
-            }
-        }
-        alert("No path!");
-        return "No path!";
+        return this.items[0];
     }
     // returns the lowest priorty element of the queue 
     rear() {
@@ -50,10 +42,10 @@ class PriorityQueue {
         // return true if the queue is empty. 
         return this.items.length == 0;
     }
-    deleteRear(){
+    deleteRear() {
         this.items.pop();
     }
-    refresh(node){
+    refresh(node) {
         let index = this.items.indexOf(node);
         this.items.splice(index, 1);
         this.enqueue(node);
