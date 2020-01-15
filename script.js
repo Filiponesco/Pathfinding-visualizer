@@ -340,7 +340,7 @@ function Dijkstra() {
             //later we can remove this if and wait when alghoritm finish work for all vertex,
             //because we will be able to drag end point
             if (minNode.Equals(target)) { //the end working alghorith when vertex with minDistance(priority close 0) is target
-                slowDrawOpenPath(open, minNode);
+                slowDrawOpenPath(close, minNode);
                 //DrawPath(minNode);
                 alert("Znaleziono ścieżkę open dl: " + open.length + "close dl: " + close.length);
                 return;
@@ -366,6 +366,7 @@ function Dijkstra() {
         close.push(minNode); //this vertex is done
     }
     alert("Brak ścieżki open dl: " + open.length + "close dl: " + close.length);
+    slowDrawOpenPath(close, minNode);
     return null;
 }
 function resetNodes() {
