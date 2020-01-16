@@ -11,12 +11,15 @@ var previousStyleTarget1 = "empty_cell";
 var previousStyleTarget2 = "empty_cell";
 var width;
 var height;
-var activeItem = null;
 var active = false;
+var activeItem = null;
+var translate = false;
 var endTouchElement = null;
 var speedDrawNewNode = 0
 var speedDrawNeighbours = 10;
 var speedDrawPath = 10;
+var firstEmpty = false;
+var firstWall = false;
 
 var grid = [];
 
@@ -277,7 +280,6 @@ function DrawPath(n) {
     var path = [];
     let temp = n;
     while (temp.parent != null) {
-        console.log(temp.parent);
         let id = NodeToId(temp);
         path.push(temp.parent);
         temp = temp.parent;
@@ -346,7 +348,6 @@ async function Dijkstra() {
         //later we can remove this if and wait when alghoritm finish work for all vertex,
         //because we will be able to drag end point
         if (minNode.Equals(target)) { //the end working alghorith when vertex with minDistance(priority close 0) is target
-            console.log("find");
             DrawPath(minNode);
             return;
         }
@@ -424,44 +425,67 @@ function CreateGridForPhones() {
 function dragStart(e) {
     activeItem = e.target;
 
-    if ((activeItem.className != "wall" && activeItem.className != "start" && activeItem.className != "target")) {
-        activeItem.className = "wall";
-        IdToNode(activeItem.id).type = "wall";
+    if (activeItem.className == "wall") {
+        firstEmpty = false;
+        firstWall = true;
+        var node = IdToNode(activeItem.id);
+        node.type = "empty_cell";
+        ColorNode(node, "empty_cell");
+        active = true;
     }
-    else if (activeItem.className == "wall") {
-        activeItem.className = "empty_cell";
-        IdToNode(activeItem.id).type = "empty_cell";
+    else if(activeItem.className != "start" || activeItem.className != "target"){
+        firstEmpty = true;
+        firstWall = false;
+        var node = IdToNode(activeItem.id);
+        node.type = "wall";
+        ColorNode(node, "wall");
+        active = true;
     }
+
     if (activeItem.className == "start" || activeItem.className == "target") {
-        active = true; //active drag element only when it is start or target
+        active = true;
+        translate = true; //true if drag element when it is start or target
     }
 }
-function dragEnd(e) {
-    if (active && activeItem !== null && endTouchElement !== null) {
-        console.log(endTouchElement.id);
+function dragEnd(e) { //only to set start or target
+    if (endTouchElement != null) {
 
-        //ustaw start
+        // //ustaw start style
         endTouchElement.className = activeItem.className;
-        IdToNode(endTouchElement.id).type = activeItem.className;
 
-        //zapisz do grid
+        //zapisz do grid (nody)
         SetStartTarget(endTouchElement.id, activeItem.className);
 
-        //ustaw stary start
-        activeItem.className = "empty_cell";
-        IdToNode(activeItem.id).type = "empty_cell";
+        //ustaw stary start style
+         activeItem.className = "empty_cell";
+
     }
     active = false;
     activeItem = null;
+    endTouchElement = null;
+    translate = false;
 }
 function drag(e) {
-    if (active) { //when element is start or end
+    if (active) {
         if (e.type == "touchmove") {
             e.preventDefault();
             var el = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
             if (el !== null) {
-                if (el.nodeName == "TD" && el.className !== "target") {
-                    endTouchElement = el;
+                if (el.nodeName == "TD") {
+                    if (el.className !== "target" && el.className !== "start" && !translate) {
+                        var node = IdToNode(el.id);
+                        if (firstEmpty) {
+                            node.type = "wall";
+                            ColorNode(node, "wall");
+                        }
+                        if (firstWall) {
+                            node.type = "empty_cell";
+                            ColorNode(node, "empty_cell");
+                        }
+                    }
+                    if(translate){
+                        endTouchElement = el;
+                    }
                 }
             }
         }

@@ -41,6 +41,7 @@ button{
     width: 100%;
     height: auto;
     border: 2px black solid;
+    margin-top: 15px;
 }
 .empty_cell{
     width: var(--size);
