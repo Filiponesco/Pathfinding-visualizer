@@ -15,7 +15,8 @@ var activeItem = null;
 var active = false;
 var endTouchElement = null;
 var speedDrawPath = 100;
-var speedDrawOpen = 10;
+var speedDrawList = 10;
+var speedDraw = 10;
 
 var grid = [];
 
@@ -268,6 +269,7 @@ function DrawPath(n) {
     var path = [];
     let temp = n;
     while (temp.parent != null) {
+        console.log(temp.parent);
         let id = NodeToId(temp);
         path.push(temp.parent);
         temp = temp.parent;
@@ -284,7 +286,7 @@ function DrawPath(n) {
             if (i >= 0) {
                 myLoop();
             }
-        }, speedDrawPath)
+        }, 0)
     }
     myLoop();
 }
@@ -310,10 +312,10 @@ function Visualize() {
             break;
     }
 }
-function Dijkstra() {
+async function Dijkstra() {
     Clear("visualization");
     let open = []; //item from Q with priority < Infinity
-    let close = [];
+    let closed = [];
     let start = grid[start_y][start_x];
     let target = grid[target_y][target_x];
 
@@ -321,7 +323,7 @@ function Dijkstra() {
     start.priority = 0; //odległość od źródła, wszystkie pozostale mają infinity
     let Q = new PriorityQueue(); //it is create for fast get vertex with min distance (priority close 0)
 
-    open.push(start);
+    //open.push(start);
 
     for (i = 0; i < height; i++) {
         for (j = 0; j < width; j++) {
@@ -330,43 +332,52 @@ function Dijkstra() {
     }
     //it does not exist neigbour vertex of all previous vertex, 
     //when you want count for all vertex change to: "!Q.isEmpty"
-    while (open.length > 0) { //when infinity: it does not exist neigbour vertex of all previous vertex
-        let minNode;
-        if (Q.front().priority < Infinity) {
+    let minNode;
+    while (Q.front().priority < Infinity)  { //when infinity: it does not exist neigbour vertex of all previous vertex
+        //if (Q.front().priority < Infinity) {
             minNode = Q.dequeue(); //i dont want that minNode has propably that his priority is infinity
-            open.push(minNode);
-            //ColorNode(minNode, "open");
+            //open.push(minNode);
+            await Sleep(speedDraw);
+            ColorNode(minNode, "open"); //first node is start
 
             //later we can remove this if and wait when alghoritm finish work for all vertex,
             //because we will be able to drag end point
             if (minNode.Equals(target)) { //the end working alghorith when vertex with minDistance(priority close 0) is target
-                slowDrawOpenPath(close, minNode);
-                //DrawPath(minNode);
-                alert("Znaleziono ścieżkę open dl: " + open.length + "close dl: " + close.length);
+                //Draw(closed, "closed");
+                console.log("find");
+                DrawPath(minNode);
                 return;
             }
             let neighbours = Neighbours(minNode);
-            neighbours.forEach(n => {
-                if (n.type != "wall" && close.indexOf(n) < 0) { //check if vertex was calculate
+            //async function because i need to wait for colorNode
+            await asyncForEach(neighbours, async (n) => {
+                await Sleep(speedDraw);
+                if (n.type != "wall" && closed.indexOf(n) < 0) { //check if vertex was calculate
                     if (minNode.priority + 1 < n.priority) {
                         n.priority = minNode.priority + 1;
                         Q.refresh(n); //insert node in correct place
                         n.parent = minNode; //every vertex (without start) has previous vertex which path from start to him is shortest
-                        if (open.indexOf(n) < 0) { // if its not in open set, add it there
-                            open.push(n); //new vertex to calculate neigbours in next iterations
-                        }
+                        ColorNode(n, "open");
+                        //if (Q.items.indexOf(n) < 0/*open.indexOf(n) < 0 */) { // if its not in open set, add it there
+                            ////open.push(n); //new vertex to calculate neigbours in next iterations
+                            //ColorNode(n, "open");
+                        //}
                     }
                 }
-            });
-        }
+              })
+        //}
         //remove open in order to end loop
         //it will be run last time when (if Q.front().priority < Infinity not run) to delete last item in open
-        let index = open.indexOf(minNode);
-        open.splice(index, 1); //remove this vertex because
-        close.push(minNode); //this vertex is done
+        // let index = open.indexOf(minNode);
+        // open.splice(index, 1); //remove this vertex because
+         //closed.push(minNode); //this vertex is done
+        await Sleep(speedDraw);
+        ColorNode(minNode, "closed");
+        //console.log(open);
     }
-    alert("Brak ścieżki open dl: " + open.length + "close dl: " + close.length);
-    slowDrawOpenPath(close, minNode);
+    //console.log(open);
+    alert("Brak ścieżki");
+    //Draw(closed, "closed");
     return null;
 }
 function resetNodes() {
@@ -467,35 +478,24 @@ function drag(e) {
         }
     }
 }
-function slowDrawOpenPath(open, minNode) {
+function Draw(list, className) {
     var i = 0;
     function myLoop() {
         setTimeout(function () {
-            ColorNode(open[i], "open");
+            ColorNode(list[i], className);
             i++;
-            if (i < open.length) {
+            if (i < list.length) {
                 myLoop();
             }
-            else {
-                DrawPath(minNode);
-            }
-        }, speedDrawOpen)
+        }, speedDrawList)
     }
     myLoop();
 }
-function slowDrawOpenPathClose(open, minNode, close) {
-    var i = 0;
-    function myLoop() {
-        setTimeout(function () {
-            ColorNode(open[i], "open");
-            i++;
-            if (i < open.length) {
-                myLoop();
-            }
-            else {
-                DrawPath(minNode);
-            }
-        }, speedDrawOpen)
-    }
-    myLoop();
+function Sleep(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+      await callback(array[index], index, array);
+    }
+  }
