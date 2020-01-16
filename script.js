@@ -458,6 +458,8 @@ function dragEnd(e) { //only to set start or target
 
         //ustaw stary start style
          activeItem.className = "empty_cell";
+         //Save to grid
+         IdToNode(activeItem.id).type = "empty_cell";
 
     }
     active = false;
