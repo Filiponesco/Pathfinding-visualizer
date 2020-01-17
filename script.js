@@ -20,6 +20,9 @@ var speedDrawNeighbours = 10;
 var speedDrawPath = 10;
 var firstEmpty = false;
 var firstWall = false;
+var isTranslateStart = false;
+var isTranslateTarget = false;
+var prevMoveEL = null;
 
 var grid = [];
 
@@ -424,6 +427,7 @@ function CreateGridForPhones() {
 }
 function dragStart(e) {
     activeItem = e.target;
+    console.log(activeItem.className);
 
     if (activeItem.className == "wall") {
         firstEmpty = false;
@@ -433,7 +437,7 @@ function dragStart(e) {
         ColorNode(node, "empty_cell");
         active = true;
     }
-    else if(activeItem.className != "start" || activeItem.className != "target"){
+    else if (activeItem.className != "start" || activeItem.className != "target") {
         firstEmpty = true;
         firstWall = false;
         var node = IdToNode(activeItem.id);
@@ -444,50 +448,79 @@ function dragStart(e) {
 
     if (activeItem.className == "start" || activeItem.className == "target") {
         active = true;
-        translate = true; //true if drag element when it is start or target
+        prevMoveEl = activeItem;
+        if (activeItem.className == "start") {
+            isTranslateStart = true;
+        }
+        if (activeItem.className == "target") {
+            isTranslateTarget = true;
+        }
     }
 }
 function dragEnd(e) { //only to set start or target
-    if (endTouchElement != null) {
+    console.log("dragEnd");
+    // if (endTouchElement != null) {
 
-        // //ustaw start style
-        endTouchElement.className = activeItem.className;
+    // //ustaw start style
+    // endTouchElement.className = activeItem.className;
 
-        //zapisz do grid (nody)
-        SetStartTarget(endTouchElement.id, activeItem.className);
+    //zapisz do grid (nody)
+    //SetStartTarget(endTouchElement.id, activeItem.className);
 
-        //ustaw stary start style
-         activeItem.className = "empty_cell";
-         //Save to grid
-         IdToNode(activeItem.id).type = "empty_cell";
+    //     //ustaw stary start style
+    //     activeItem.className = "empty_cell";
+    //     //Save to grid
+    //     IdToNode(activeItem.id).type = "empty_cell";
 
-    }
+    // }
     active = false;
     activeItem = null;
     endTouchElement = null;
-    translate = false;
+    isTranslateStart = false;
+    isTranslateTarget = false;
 }
 function drag(e) {
     if (active) {
         if (e.type == "touchmove") {
             e.preventDefault();
             var el = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
-            if (el !== null) {
+            if (el != null) {
                 if (el.nodeName == "TD") {
-                    if (el.className !== "target" && el.className !== "start" && !translate) {
+                    if (el.className !== "target" && el.className !== "start") {
                         var node = IdToNode(el.id);
+                        //draw wall
                         if (firstEmpty) {
                             node.type = "wall";
                             ColorNode(node, "wall");
                         }
+                        //draw empty_cell
                         if (firstWall) {
                             node.type = "empty_cell";
-                            ColorNode(node, "empty_cell");
+                            ColorNode(node, "empty_cell"); //change class
                         }
                     }
-                    if(translate){
-                        endTouchElement = el;
+                    if (isTranslateStart || isTranslateTarget) {
+                        //drag start or target
+                        if (el != prevMoveEl) {
+                            console.log("sth");
+                            if (isTranslateStart) {
+                                el.className = "start"
+                                //zapisz do grid (nody)
+                                SetStartTarget(el.id, "start");
+                            }
+                            if (isTranslateTarget) {
+                                el.className = "target"
+                                //zapisz do grid (nody)
+                                SetStartTarget(el.id, "target");
+                            }
+                            //cant use colorNode
+                            prevMoveEl.className = "empty_cell";
+                            IdToNode(prevMoveEl.id).type = "empty_cell";
+                            endTouchElement = el;
+                            prevMoveEl = el;
+                        }
                     }
+                    console.log("nothing");
                 }
             }
         }
