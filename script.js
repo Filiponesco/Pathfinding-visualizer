@@ -13,8 +13,6 @@ var width;
 var height;
 var active = false;
 var activeItem = null;
-var translate = false;
-var endTouchElement = null;
 var speedDrawNewNode = 0
 var speedDrawNeighbours = 10;
 var speedDrawPath = 10;
@@ -22,7 +20,8 @@ var firstEmpty = false;
 var firstWall = false;
 var isTranslateStart = false;
 var isTranslateTarget = false;
-var prevMoveEL = null;
+var prevMoveEl = null;
+var previousClass = "empty_cell";
 
 var grid = [];
 
@@ -31,12 +30,6 @@ function init() {
         mouseDown = 1;
     }
     document.body.onmouseup = function () {
-        mouseDown = 0;
-    }
-    document.body.ontouchstart = function () {
-        mouseDown = 1;
-    }
-    document.body.ontouchmove = function () {
         mouseDown = 0;
     }
 
@@ -427,7 +420,6 @@ function CreateGridForPhones() {
 }
 function dragStart(e) {
     activeItem = e.target;
-    console.log(activeItem.className);
 
     if (activeItem.className == "wall") {
         firstEmpty = false;
@@ -458,26 +450,14 @@ function dragStart(e) {
     }
 }
 function dragEnd(e) { //only to set start or target
-    console.log("dragEnd");
-    // if (endTouchElement != null) {
-
-    // //ustaw start style
-    // endTouchElement.className = activeItem.className;
-
-    //zapisz do grid (nody)
-    //SetStartTarget(endTouchElement.id, activeItem.className);
-
-    //     //ustaw stary start style
-    //     activeItem.className = "empty_cell";
-    //     //Save to grid
-    //     IdToNode(activeItem.id).type = "empty_cell";
-
-    // }
     active = false;
     activeItem = null;
-    endTouchElement = null;
     isTranslateStart = false;
     isTranslateTarget = false;
+    previousClass = "empty_cell";
+    firstWall = false;
+    firstEmpty = false;
+    prevMoveEl = null;
 }
 function drag(e) {
     if (active) {
@@ -485,8 +465,8 @@ function drag(e) {
             e.preventDefault();
             var el = document.elementFromPoint(e.touches[0].pageX, e.touches[0].pageY);
             if (el != null) {
-                if (el.nodeName == "TD") {
-                    if (el.className !== "target" && el.className !== "start") {
+                if (el.nodeName == "TD" && el != prevMoveEl && el.className != "start" && el.className != "target") { //if finger is on another node
+                    if (!isTranslateStart && !isTranslateTarget) {
                         var node = IdToNode(el.id);
                         //draw wall
                         if (firstEmpty) {
@@ -494,33 +474,30 @@ function drag(e) {
                             ColorNode(node, "wall");
                         }
                         //draw empty_cell
-                        if (firstWall) {
+                        if (firstWall && el.className != "open" && el.className != "closed" && el.className != "path") {
                             node.type = "empty_cell";
                             ColorNode(node, "empty_cell"); //change class
                         }
                     }
+                    //drag start or target
                     if (isTranslateStart || isTranslateTarget) {
-                        //drag start or target
-                        if (el != prevMoveEl) {
-                            console.log("sth");
-                            if (isTranslateStart) {
-                                el.className = "start"
-                                //zapisz do grid (nody)
-                                SetStartTarget(el.id, "start");
-                            }
-                            if (isTranslateTarget) {
-                                el.className = "target"
-                                //zapisz do grid (nody)
-                                SetStartTarget(el.id, "target");
-                            }
-                            //cant use colorNode
-                            prevMoveEl.className = "empty_cell";
-                            IdToNode(prevMoveEl.id).type = "empty_cell";
-                            endTouchElement = el;
-                            prevMoveEl = el;
+                        prevMoveEl.className = previousClass;
+                        IdToNode(prevMoveEl.id).type = previousClass;
+                        var tempClass = el.className;
+                        previousClass = tempClass; //because it later change so i need to make local var
+
+                        if (isTranslateStart) {
+                            el.className = "start"
+                            //zapisz do grid (nody)
+                            SetStartTarget(el.id, "start");
+                        }
+                        if (isTranslateTarget) {
+                            el.className = "target"
+                            //zapisz do grid (nody)
+                            SetStartTarget(el.id, "target");
                         }
                     }
-                    console.log("nothing");
+                    prevMoveEl = el; //only change prev when other is diff than start or target
                 }
             }
         }
