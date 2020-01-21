@@ -14,8 +14,8 @@ var height;
 var active = false;
 var activeItem = null;
 var speedDrawNewNode = 0
-var speedDrawNeighbours = 10;
-var speedDrawPath = 10;
+var speedDrawNeighbours = 0;
+var speedDrawPath = 20;
 var firstEmpty = false;
 var firstWall = false;
 var isTranslateStart = false;
@@ -375,12 +375,14 @@ function resetNodes() {
     }
 }
 function CreateGridForPhones() {
-    var size = 20;
-    width = window.screen.availWidth;
-    height = window.screen.availHeight;
+    var size = 60;
+    width = document.documentElement.clientWidth
+    height = document.documentElement.clientHeight;
+    alert("width " + document.documentElement.clientWidth);
+    alert("height " + document.documentElement.clientHeight);
 
     width = Math.floor(width / size);
-    height = height - 350;
+    height = height - 550; //550 is size of topBar and space for footer
     height = Math.floor(height / size);
 
     var element = document.getElementById("grid");

@@ -9,9 +9,13 @@ body{
     height: 460px;
 }
 #menu{
+    height: 300px;
     display: block;
     background: wheat;
     padding: 5px;
+}
+#legend{
+    height: 160px;
 }
 select {
     display: inline-block;
@@ -133,4 +137,7 @@ button{
     -webkit-user-drag: none;
     -webkit-user-select: none;
     -ms-user-select: none;
+}
+footer{
+    font-size: 40px;
 }
