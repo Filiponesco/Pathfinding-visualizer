@@ -5,17 +5,10 @@
 body{
     font-size:60px;
 }
-#topBar{
-    height: 460px;
-}
 #menu{
-    height: 300px;
     display: block;
     background: wheat;
     padding: 5px;
-}
-#legend{
-    height: 160px;
 }
 select {
     display: inline-block;

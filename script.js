@@ -378,11 +378,9 @@ function CreateGridForPhones() {
     var size = 60;
     width = document.documentElement.clientWidth
     height = document.documentElement.clientHeight;
-    alert("width " + document.documentElement.clientWidth);
-    alert("height " + document.documentElement.clientHeight);
 
     width = Math.floor(width / size);
-    height = height - 550; //550 is size of topBar and space for footer
+    height = height - 590; //550 is size of topBar and space for footer
     height = Math.floor(height / size);
 
     var element = document.getElementById("grid");
