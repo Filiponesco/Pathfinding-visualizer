@@ -35,6 +35,7 @@ function init() {
 
     if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
         CreateGridForPhones();
+        console.log("device");
     }
     else {
         CreateGrid();
@@ -345,6 +346,7 @@ async function Dijkstra() {
         //because we will be able to drag end point
         if (minNode.Equals(target)) { //the end working alghorith when vertex with minDistance(priority close 0) is target
             DrawPath(minNode);
+            resetNodes();
             return;
         }
         let neighbours = Neighbours(minNode);
@@ -363,6 +365,7 @@ async function Dijkstra() {
         })
         //ColorNode(minNode, "closed"); //is closed before counting neigbours(look better)
     }
+    resetNodes();
     alert("Brak ścieżki");
     return null;
 }
@@ -380,7 +383,7 @@ function CreateGridForPhones() {
     height = document.documentElement.clientHeight;
 
     width = Math.floor(width / size);
-    height = height - 590; //550 is size of topBar and space for footer
+    height = height - 590; //590 is size of topBar and space for footer
     height = Math.floor(height / size);
 
     var element = document.getElementById("grid");
