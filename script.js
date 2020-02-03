@@ -222,6 +222,7 @@ async function AStar() {
 
         if (current.Equals(target)) { // if current node is target node, we found path
             DrawPath(current);
+            resetNodes();
             return;
         }
 
@@ -248,7 +249,7 @@ async function AStar() {
         })
 
     }
-
+    resetNodes();
     alert("There is no path");
     //slowDrawOpenPath(closed, null);
     return null;
