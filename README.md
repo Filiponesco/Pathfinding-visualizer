@@ -1,6 +1,8 @@
 # Pathfinding-visualizer
 5th semester web development
 
+## [Wypróbuj](https://filiponesco.github.io/Pathfinding-visualizer/)
+
 ## 1.	Część I
 
 ###	Opis programu
